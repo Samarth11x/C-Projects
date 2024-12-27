@@ -17,7 +17,8 @@ int main(){
 
         if(choice == 7){
             printf("\n \tThank You :)\n");
-            break;
+            printf("\n \tDeveloped by : SAM \n");
+            break ;
         }
 
         if(choice <1 || choice > 7){
