@@ -3,13 +3,20 @@
 
 int input_choice();
 void fill_time(char*, int);
+void fill_date(char*);
+void fill_day(char*);
 
 int main(){
-    char time[50];
+    char time[50], date[100], day[10];
     int choice = input_choice();
 
-    fill_time(time, choice);                                           
-    printf("\n Current Time : %s", time);                             //display current time 
+    fill_day(day);
+    fill_date(date);  
+    fill_time(time, choice);
+    printf("\n Date : %s", date);                                    //display date
+    printf("\n Day  : %s", day);                                     //display day                                      
+    printf("\n Time : %s", time);                            //display current time 
+
     return 0;
 }
 
@@ -38,4 +45,26 @@ void fill_time(char* buffer, int choice){
     else {                            
        strftime(buffer, 50, "%I:%M:%S %p", current_time);
     }
+}
+
+void fill_date(char*buffer){
+    time_t raw_time;
+    struct tm *current_time;
+
+    time(&raw_time);
+    current_time = localtime(&raw_time);                                  // same as above function but this will print the date 
+
+    strftime(buffer, 100, "%B %d, %Y", current_time);                 // %A = day of the week, %B = month, %d = date, %Y = year    
+
+}
+
+void fill_day(char*buffer){
+    time_t raw_time;
+    struct tm *current_time;
+
+    time(&raw_time);
+    current_time = localtime(&raw_time);
+
+    strftime(buffer, 10, "%A", current_time);
+
 }
