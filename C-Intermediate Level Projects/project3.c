@@ -1,5 +1,6 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <time.h>
+
 
 int input_choice();
 void fill_time(char*, int);

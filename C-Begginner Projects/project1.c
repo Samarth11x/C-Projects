@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include<stdlib.h>  // to generate random number
-#include<time.h>    // to seed random number using current time
+#include <stdlib.h>  // to generate random number
+#include <time.h>    // to seed random number using current time
 
 int main(){
     int random, guess;
