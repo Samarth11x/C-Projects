@@ -15,7 +15,7 @@ int main(){
     fill_time(time, choice);
     printf("\n Date : %s", date);                                    //display date
     printf("\n Day  : %s", day);                                     //display day                                      
-    printf("\n Time : %s", time);                            //display current time 
+    printf("\n Time : %s", time);                                    //display current time 
 
     return 0;
 }
@@ -54,7 +54,7 @@ void fill_date(char*buffer){
     time(&raw_time);
     current_time = localtime(&raw_time);                                  // same as above function but this will print the date 
 
-    strftime(buffer, 100, "%B %d, %Y", current_time);                 // %A = day of the week, %B = month, %d = date, %Y = year    
+    strftime(buffer, 100, "%B %d, %Y", current_time);                     //  %B = month, %d = date, %Y = year    
 
 }
 
@@ -65,6 +65,6 @@ void fill_day(char*buffer){
     time(&raw_time);
     current_time = localtime(&raw_time);
 
-    strftime(buffer, 10, "%A", current_time);
+    strftime(buffer, 10, "%A", current_time);                             // %A = day of the week
 
 }
