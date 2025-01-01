@@ -9,10 +9,11 @@ typedef struct {
     char password [CREDENTIALS_LENGTH];
 } user ;                                                //structure to store credentials
 
-user users[MAX_USERS];
+user users[MAX_USERS];                                  // array to store [Max_user] 
 int User_count = 0;                                     //globally initialization of User count from 0
 
 void register_user();
+void input_password(char*);
 int login_user();                                       // to return the user index 
 void fix_fgets_input(char*);
 
@@ -22,12 +23,14 @@ int main() {
 
 
     while(1){
+      printf("\n Welcome to User Management \n");
     printf("\n1.Register");
     printf("\n2.Log in");
-    printf("\n3.Exit");
+    printf("\n3.Exit\n");
 
-    printf("Select an option : ");
+    printf("\nSelect an option : ");
     scanf("%d", &option);
+    getchar();
 
     switch (option){
         case 1 :
@@ -35,20 +38,19 @@ int main() {
           break;
 
         case 2 :
-          user_index = login_user;
-          if( user_index >= 1){
-            printf("\nLogin Successful ! \nWelcome %s!",users[user_index].username );
+          user_index = login_user();
+          if(user_index >= 0){
+            printf("\nLogin Successful ! Welcome %s !\n", users[user_index].username );
 
           }
           else{
             printf("\nLogin failed! Incorrect User Name or Password\n");
 
           }
-          login_user();
           break;
 
         case 3 :
-          printf("Exiting Program");
+          printf("\n \t Exiting Program \n ");
           return 0;
           break;
 
@@ -67,15 +69,39 @@ void register_user(){
         return;
         }
 
-    int New_index =User_count;
-    printf("\nRegister a New User");
-    printf("Enter Your Username : ");
+    int New_index = User_count;
+    printf("\nRegister a New User\n");
+    printf("Enter Username : ");
     fgets(users[New_index].username, CREDENTIALS_LENGTH, stdin);
-    fix_fgets_input(users[New_index].username);                 // to detect '\n' and change it to '\0' which converts it in the form of string
+    fix_fgets_input(users[New_index].username);                   // to detect '\n' and change it to '\0' which converts it in the form of string
+    input_password(users[New_index].password);   
+    User_count++;
+    printf("\n Registration Successful!!\n");
+}
+
+void input_password(char* password){
+  printf("Enter Password : ");
+  fgets(password, CREDENTIALS_LENGTH, stdin);
+  fix_fgets_input(password);
 }
 
 int login_user(){
-    return -1;
+  char username [CREDENTIALS_LENGTH];
+  char password [CREDENTIALS_LENGTH];
+  
+  printf("Enter Username : ");
+  fgets(username, CREDENTIALS_LENGTH, stdin);
+  fix_fgets_input(username);
+  input_password(password);
+
+   for (int i = 0 ; i < User_count ; i++ ){
+    if( strcmp(username, users[i].username) == 0 && strcmp (password, users[i].password) == 0){
+      return i;
+    }
+   }
+
+   return -1;
+
 }
 
 void fix_fgets_input(char* string){
