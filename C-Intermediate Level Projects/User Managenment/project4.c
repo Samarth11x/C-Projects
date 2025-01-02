@@ -9,12 +9,12 @@ typedef struct {
     char password [CREDENTIALS_LENGTH];
 } user ;                                                //structure to store credentials
 
-user users[MAX_USERS];                                  // array to store [Max_user] 
+user users[MAX_USERS];                                  // array to store [Max_user] multiple users
 int User_count = 0;                                     //globally initialization of User count from 0
 
+void input_credentials(char* username, char* password); 
 void register_user();
-void input_password(char*);
-int login_user();                                       // to return the user index 
+int login_user();                                        
 void fix_fgets_input(char*);
 
 int main() {
@@ -64,6 +64,7 @@ int main() {
 }
 
 void register_user(){
+
     if(User_count == MAX_USERS){
         printf("\nMaximum %d users are supported. \nNo more registration are allowed!!\n", MAX_USERS);   
         return;
@@ -71,15 +72,17 @@ void register_user(){
 
     int New_index = User_count;
     printf("\nRegister a New User\n");
-    printf("Enter Username : ");
-    fgets(users[New_index].username, CREDENTIALS_LENGTH, stdin);
-    fix_fgets_input(users[New_index].username);                   // to detect '\n' and change it to '\0' which converts it in the form of string
-    input_password(users[New_index].password);   
+    input_credentials(users[New_index].username, users[New_index].password);  
+
     User_count++;
     printf("\n Registration Successful!!\n");
 }
 
-void input_password(char* password){
+void input_credentials(char* username, char* password){
+  printf("Enter Username : ");
+  fgets(username, CREDENTIALS_LENGTH, stdin);
+  fix_fgets_input(username);                                     
+
   printf("Enter Password : ");
   fgets(password, CREDENTIALS_LENGTH, stdin);
   fix_fgets_input(password);
@@ -88,13 +91,11 @@ void input_password(char* password){
 int login_user(){
   char username [CREDENTIALS_LENGTH];
   char password [CREDENTIALS_LENGTH];
-  
-  printf("Enter Username : ");
-  fgets(username, CREDENTIALS_LENGTH, stdin);
-  fix_fgets_input(username);
-  input_password(password);
 
-   for (int i = 0 ; i < User_count ; i++ ){
+
+  input_credentials( username, password);
+ 
+  for (int i = 0 ; i < User_count ; i++ ){
     if( strcmp(username, users[i].username) == 0 && strcmp (password, users[i].password) == 0){
       return i;
     }
