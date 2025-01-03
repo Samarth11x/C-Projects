@@ -24,6 +24,8 @@ void fix_fgets_input(char*);
 void deposit_money();
 void withdraw_money();
 void check_balance();
+
+void fund_transfer();
  
 
 int main() {
@@ -96,6 +98,9 @@ void print_menu(int choice, int option ){
         }
         break;
 
+        case 3 : fund_transfer();
+        break;
+
         case 4 :printf("\n\tClosing the bank!!\n    Thank you for your visit :)\n");
         return ;
         break ;
@@ -124,21 +129,21 @@ void create_account(){
     fgets(acc.name, sizeof(acc.name), stdin);
     fix_fgets_input(acc.name);
 
-    printf("\nEnter your Account Number : ");
+    printf("Enter your Account Number : ");
     scanf("%d", &acc.Acc_number);
    
     do{
         ch = getchar();
     }while (ch != '\n' && ch != EOF);
 
-    printf("\nEnter your Address : ");
+    printf("Enter your Address : ");
     fgets(acc.address, sizeof(acc.address), stdin);
     fix_fgets_input(acc.address);
 
-    printf("\nEnter your Contact Number : ");
+    printf("Enter your Contact Number : ");
     scanf("%d", &acc.contact_no);
 
-    printf("\nCreate your Pin (6-digit) : ");
+    printf("Create your Pin (6-digit) : ");
     scanf("%d", &acc.pin);
 
     acc.balance = 0;
@@ -146,7 +151,7 @@ void create_account(){
     fwrite(&acc, sizeof(acc), 1, file);
     fclose(file);
     printf("\nAccount created successfully!!\n");
-
+ 
 }
 
 void view_account_details() {
@@ -179,7 +184,7 @@ void view_account_details() {
 }
 
 void edit_account_details(){
-    printf("1");
+    printf("Function not defined");
 }
 
 void Delete_account(){
@@ -194,13 +199,13 @@ void fix_fgets_input(char* string){
 void deposit_money(){
     FILE *file = fopen(ACCOUNT_FILE, "rb+");
     if (file == NULL){
-        printf("\n Unable to find file !! \n");
+        printf("\n Unable to access the file !! \n");
         return;
     }
 
     int acc_no;
     int acc_pin;
-    account acc_r;
+    account acc_read;
     float money;
 
     printf("Enter your Account no. : ");
@@ -210,19 +215,20 @@ void deposit_money(){
     printf("Enter amount to deposit : ");
     scanf("%f", &money);
 
-    while(fread(&acc_r, sizeof(acc_r), 1, file))
+    while(fread(&acc_read, sizeof(acc_read), 1, file))
     {
-        if(acc_r.Acc_number == acc_no && acc_r.pin == acc_pin){
-            acc_r.balance += money;
-            fseek(file, -(long int)sizeof(acc_r), SEEK_CUR);
-            fwrite(&acc_r, sizeof(acc_r), 1, file);
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            acc_read.balance += money;
+            fseek(file, -(long int)sizeof(acc_read), SEEK_CUR);
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
             fclose(file);
-            printf("Successfully Deposited Rs.%.2f \nYour current Balance is Rs. %.2f", money, acc_r.balance);
+            printf("Successfully Deposited Rs.%.2f \nYour New Balance is Rs. %.2f", money, acc_read.balance);
             return;
         }
     }
     fclose(file);
-    printf("\n Account No. %d was not found in records.\nyour money could not be deposited !!", acc_no);
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+    printf("\nYour money Can not be Deposited");
 }
 
 void withdraw_money(){
@@ -235,7 +241,7 @@ void withdraw_money(){
     int acc_no;
     int acc_pin;
     float money;
-    account acc_rea;
+    account acc_read;
     
     printf("Enter account no : ");
     scanf("%d", &acc_no);
@@ -244,32 +250,39 @@ void withdraw_money(){
     printf("Enter withdrawal amount : ");
     scanf("%f", &money);
 
-    while(fread(&acc_rea, sizeof(acc_rea), 1, file))
+    while(fread(&acc_read, sizeof(acc_read), 1, file))
     {
-        if(acc_rea.Acc_number == acc_no && acc_rea.pin == acc_pin){
-            acc_rea.balance -= money;
-            fseek(file , -(long int)sizeof(acc_rea), SEEK_CUR );
-            fwrite(&acc_rea, sizeof(acc_rea), 1, file);
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+           if(acc_read.balance >= money){
+           acc_read.balance -= money;
+            fseek(file , -(long int)sizeof(acc_read), SEEK_CUR );
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            printf("\nRs. %.2f Withdrawn Successfully from you bank account of account no %d\nAvailable balance is Rs.%.2f\n", money, acc_no, acc_read.balance);
+            return;
+            }
+            else{
+                printf("\nInsufficient Balance!!\n");
+            }
             fclose(file);
-            printf("\nRs. %.2f Withdrawn Successfully from you bank account of account no %d\nYour current balance is Rs.%.2f\n", money, acc_no, acc_rea.balance);
             return;
         }
 
     }
     fclose(file);
-    printf("\nAccount No. %d was not found in records. \nYour can not withdraw your amount");
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+    printf("\nYou can not withdraw your amount\n");
 }
 
 void check_balance(){
      FILE *file = fopen(ACCOUNT_FILE, "rb");  
   if(file == NULL ){
-        printf("\n Unable to open file !!\n");
+        printf("\n Unable to access the file !!\n");
         return ;
     }
 
     int acc_no;
     int acc_pin;
-    account acc_re;
+    account acc_read;
 
     printf("Enter your Account Number : ");
     scanf("%d", &acc_no);
@@ -277,13 +290,93 @@ void check_balance(){
     scanf("%d", &acc_pin);
 
 
-     while(fread(&acc_re, sizeof(acc_re), 1, file)){
-        if(acc_re.Acc_number == acc_no && acc_re.pin == acc_pin){
-            printf("\nAvailable Balance : Rs. %.2f\n", acc_re.balance);
+     while(fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            printf("\nAvailable Balance : Rs. %.2f\n", acc_read.balance);
             fclose(file);
             return;
         }
     }
-    printf("\n Account No. %d was not found in records.\n", acc_no);
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+    fclose(file);
+}
+
+void fund_transfer(){
+    FILE *file = fopen(ACCOUNT_FILE, "rb+");
+    if(file == NULL){
+        printf("\nUnable to access the File.\n");
+        return;
+    }
+
+    int from_acc_x ;
+    int to_acc_y ;
+    int acc_pin ;
+    account acc_read;
+    float money ;
+    int found_from = 0, found_to = 0;
+
+    printf("Enter your Account No. : ");
+    scanf("%d", &from_acc_x);
+
+    printf("Enter your PIN : ");
+    scanf("%d", &acc_pin);
+
+    printf("Enter Amount : ");
+    scanf("%f", &money);
+
+    printf("Transfer Amount to  Account No. : ");
+    scanf("%d", &to_acc_y);
+
+    // Debit from sender's account
+    while (fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == from_acc_x && acc_read.pin == acc_pin ){
+            if(acc_read.balance < money){
+                printf("Insufficient balance.\n");
+                fclose(file);
+                return;
+            }
+            acc_read.balance -= money;
+            fseek(file , -(long int)sizeof(acc_read), SEEK_CUR );
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            found_from = 1;
+            break;
+        }
+    }
+
+    if(!found_from){
+        printf("\nAccount No. %d was not found in records or incorrect PIN.\n", from_acc_x);
+        fclose(file);
+        return;
+    }
+
+    // Credit to receiver's account
+    rewind(file);
+    while (fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == to_acc_y){
+            acc_read.balance += money;
+            fseek(file , -(long int)sizeof(acc_read), SEEK_CUR );
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            found_to = 1;
+            break;
+        }
+    }
+
+    if(!found_to){
+        printf("\nAccount No. %d was not found in records.\n", to_acc_y);
+
+        // Revert the debit transaction
+        rewind(file);
+        while (fread(&acc_read, sizeof(acc_read), 1, file)){
+            if(acc_read.Acc_number == from_acc_x){
+                acc_read.balance += money;
+                fseek(file , -(long int)sizeof(acc_read), SEEK_CUR );
+                fwrite(&acc_read, sizeof(acc_read), 1, file);
+                break;
+            }
+        }
+    } else {
+        printf("\nRs. %.2f Transferred Successfully from your bank account of account no %d to account no %d", money, from_acc_x, to_acc_y);
+    }
+
     fclose(file);
 }
