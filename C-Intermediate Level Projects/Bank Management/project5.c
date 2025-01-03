@@ -22,7 +22,7 @@ void Delete_account();
 void fix_fgets_input(char*);
 
 void deposit_money();
-void credit_money();
+void withdraw_money();
 void check_balance();
  
 
@@ -42,7 +42,7 @@ void print_menu(int choice, int option ){
     printf("\n3. Fund Transfer");
     printf("\n4. Exit\n");
 
-    printf("\nEnter Your Choice : ");
+    printf("\n-> Enter Your Choice : ");
     scanf("%d", &choice);
     
     switch (choice){
@@ -51,7 +51,7 @@ void print_menu(int choice, int option ){
         printf("\n2. view Account Details");
         printf("\n3. Edit Account Details");
         printf("\n4. Delete Account");
-        printf("\n4. Back\n");
+        printf("\n5. Back\n");
         
         printf("\n-> Choose your option : ");
         scanf("%d", &option);
@@ -75,7 +75,7 @@ void print_menu(int choice, int option ){
 
         case 2 : printf("\n -*Transaction*-");
         printf("\n1. Deposit Money");
-        printf("\n2. Credit Money");
+        printf("\n2. Withdraw Money");
         printf("\n3. Check Bank Balance");
         printf("\n4. Back\n");
 
@@ -85,7 +85,7 @@ void print_menu(int choice, int option ){
         switch(option){
             case 1 : deposit_money();
             break;
-            case 2 : credit_money();
+            case 2 : withdraw_money();
             break;
             case 3 : check_balance();
             break;
@@ -96,7 +96,7 @@ void print_menu(int choice, int option ){
         }
         break;
 
-        case 4 :printf("\n \tClosing the bank!!\nThank you for your visit\n");
+        case 4 :printf("\n\tClosing the bank!!\n \tThank you for your visit\n");
         return ;
         break ;
 
@@ -138,8 +138,9 @@ void create_account(){
     printf("\nEnter your Contact Number : ");
     scanf("%d", &acc.contact_no);
 
-    printf("\nEnter your Pin (6 digit) : ");
+    printf("\nCreate your Pin (6 digit) : ");
     scanf("%d", &acc.pin);
+
     acc.balance = 0;
 
     fwrite(&acc, sizeof(acc), 1, file);
@@ -173,6 +174,7 @@ void view_account_details() {
             return;
         }
     }
+    fclose(file);
     printf("\n Account No. %d was not found.\n", acc_no);
 }
 void edit_account_details(){
@@ -188,11 +190,43 @@ void fix_fgets_input(char* string){
 }
 
 void deposit_money(){
-    printf("Money Deposited");
+    FILE *file = fopen(ACCOUNT_FILE, "rb+");
+    if (file == NULL){
+        printf("\n Unable to find file !! \n");
+        return;
+    }
+
+    int acc_no;
+    int acc_pin;
+    account acc_r;
+    float money;
+
+    printf("Enter your Account no. : ");
+    scanf("%d", &acc_no);
+    printf("Enter your Pin (6-digit) : ");
+    scanf("%d", &acc_pin);
+    printf("Enter amount to deposit : ");
+    scanf("%f", &money);
+
+    while(fread(&acc_r, sizeof(acc_r), 1, file))
+    {
+        if(acc_r.Acc_number == acc_no && acc_r.pin == acc_pin){
+            acc_r.balance += money;
+            fseek(file, -(long int)sizeof(acc_r), SEEK_CUR);
+            fwrite(&acc_r, sizeof(acc_r), 1, file);
+            fclose(file);
+            printf("Successfully Deposited Rs.%.2f \n Your current Balance is Rs. %.2f", money, acc_r.balance);
+            return;
+        }
+    }
+    fclose(file);
+    printf("\n Account No. %d was not found in records.\n your money could not be deposited !!", acc_no);
 }
-void credit_money(){
+
+void withdraw_money(){
     printf("Amount Credited ");
 }
+
 void check_balance(){
      FILE *file = fopen(ACCOUNT_FILE, "rb");  
   if(file == NULL ){
@@ -202,7 +236,7 @@ void check_balance(){
 
     int acc_no;
     int acc_pin;
-    account acc_read;
+    account acc_re;
 
     printf("Enter your Account Number : ");
     scanf("%d", &acc_no);
@@ -210,12 +244,13 @@ void check_balance(){
     scanf("%d", &acc_pin);
 
 
-     while(fread(&acc_read, sizeof(acc_read), 1, file)){
-        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
-             printf("\nAvailable Balance : Rs. %.2f\n", acc_read.balance);
+     while(fread(&acc_re, sizeof(acc_re), 1, file)){
+        if(acc_re.Acc_number == acc_no && acc_re.pin == acc_pin){
+            printf("\nAvailable Balance : Rs. %.2f\n", acc_re.balance);
             fclose(file);
             return;
         }
-        printf("\n Account No. %d was not found.\n", acc_no);
     }
+    printf("\n Account No. %d was not found in records.\n", acc_no);
+    fclose(file);
 }
