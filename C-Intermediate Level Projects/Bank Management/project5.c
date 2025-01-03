@@ -20,10 +20,15 @@ void view_account_details();
 void edit_account_details();
 void Delete_account();
 void fix_fgets_input(char*);
+
+void deposit_money();
+void credit_money();
+void check_balance();
  
 
 int main() {
-   int choice , option ;
+   int choice = 0, option = 0;
+    FILE *file = fopen(ACCOUNT_FILE, "ab+");
    print_menu(choice, option);
 }
 
@@ -41,14 +46,14 @@ void print_menu(int choice, int option ){
     scanf("%d", &choice);
     
     switch (choice){
-        case 1 : printf("Account management");
+        case 1 : printf("\n-*Account management*-\n");
         printf("\n1. create Bank Account");
         printf("\n2. view Account Details");
         printf("\n3. Edit Account Details");
         printf("\n4. Delete Account");
         printf("\n4. Back\n");
         
-        printf("\nChoose your option : ");
+        printf("\n-> Choose your option : ");
         scanf("%d", &option);
 
         switch(option){
@@ -68,20 +73,21 @@ void print_menu(int choice, int option ){
         }
         break;
 
-        case 2 : printf("\n. Transaction");
-        printf("\n1. Debit Money");
+        case 2 : printf("\n -*Transaction*-");
+        printf("\n1. Deposit Money");
         printf("\n2. Credit Money");
-        printf("\n3.Check Bank Balance");
+        printf("\n3. Check Bank Balance");
         printf("\n4. Back\n");
 
-        printf("\nChoose your option : ");
+        printf("\n-> Choose your option : ");
         scanf("%d", &option);
+
         switch(option){
-            case 1 : printf("\n1. Deposit Money");
+            case 1 : deposit_money();
             break;
-            case 2 : printf("\n2. Credit Money");
+            case 2 : credit_money();
             break;
-            case 3 : printf("\n3. Check Bank Balance");
+            case 3 : check_balance();
             break;
             case 4 : printf("\nBack to Main Menu \n");
             return ;
@@ -90,11 +96,11 @@ void print_menu(int choice, int option ){
         }
         break;
 
-        case 4 :printf("\nClosing the bank!!\n Thank you for your visit\n");
+        case 4 :printf("\n \tClosing the bank!!\nThank you for your visit\n");
         return ;
         break ;
 
-        default : printf("Invalid Choice!! \n Enter Correct Choice !!");
+        default : printf("\t Invalid Choice!! \n\t Enter Correct Choice !!");
         break ;
     }
 }
@@ -108,8 +114,8 @@ void create_account(){
         printf("\n Unable to open file !!\n");
         return ;
     }
-    
-    char ch;
+
+    char ch ;
     do{
         ch = getchar();
     }while (ch != '\n' && ch != EOF);
@@ -120,7 +126,7 @@ void create_account(){
 
     printf("\nEnter your Account Number : ");
     scanf("%d", &acc.Acc_number);
-
+   
     do{
         ch = getchar();
     }while (ch != '\n' && ch != EOF);
@@ -136,8 +142,8 @@ void create_account(){
     scanf("%d", &acc.pin);
     acc.balance = 0;
 
-    fwrite(&acc, sizeof(acc), 1, stdin);
-    fclose (file);
+    fwrite(&acc, sizeof(acc), 1, file);
+    fclose(file);
     printf("\nAccount created successfully!!\n");
 
 }
@@ -179,4 +185,37 @@ void Delete_account(){
 void fix_fgets_input(char* string){
     int index = strcspn(string, "\n");
     string[index] = '\0';
+}
+
+void deposit_money(){
+    printf("Money Deposited");
+}
+void credit_money(){
+    printf("Amount Credited ");
+}
+void check_balance(){
+     FILE *file = fopen(ACCOUNT_FILE, "rb");  
+  if(file == NULL ){
+        printf("\n Unable to open file !!\n");
+        return ;
+    }
+
+    int acc_no;
+    int acc_pin;
+    account acc_read;
+
+    printf("Enter your Account Number : ");
+    scanf("%d", &acc_no);
+    printf("Enter your Pin (6-digit) : ");
+    scanf("%d", &acc_pin);
+
+
+     while(fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+             printf("\nAvailable Balance : Rs. %.2f\n", acc_read.balance);
+            fclose(file);
+            return;
+        }
+        printf("\n Account No. %d was not found.\n", acc_no);
+    }
 }
