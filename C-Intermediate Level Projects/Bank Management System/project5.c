@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
- 
 
 
 typedef struct {
@@ -16,8 +15,13 @@ const char* ACCOUNT_FILE = "account.dat";
 
 void print_menu(int choice, int option );
 void create_account();
+void verification(int* acc_No, int* acc_pin);
 void view_account_details();
 void edit_account_details();
+void edit_Name();
+void edit_Address();
+void edit_contact_No();
+void edit_pin();
 void Delete_account();
 void fix_fgets_input(char*);
 
@@ -69,6 +73,7 @@ void print_menu(int choice, int option ){
             case 4 : Delete_account();
             break ;
             case 5 : printf("\nBack to Main Menu \n");
+            continue;
             return ;
             default : printf("Invalid Choice!! \n Enter Correct Option !! \n");
             break ;
@@ -92,6 +97,7 @@ void print_menu(int choice, int option ){
             case 3 : check_balance();
             break;
             case 4 : printf("\nBack to Main Menu \n");
+            continue;
             return ;
             default : printf("Invalid Choice!! \n Enter Correct Option !! \n");
             break ;
@@ -162,14 +168,12 @@ void view_account_details() {
     }
 
     int acc_no;
+    int acc_pin;
     account acc_read;
-
-    printf("Enter your Account Number : ");
-    scanf("%d", &acc_no);
-
+    verification(&acc_no, &acc_pin);
 
     while(fread(&acc_read, sizeof(acc_read), 1, file)){
-        if(acc_read.Acc_number == acc_no){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
             printf("\nAccount Holder Name = %s", acc_read.name);
             printf("\nAcc. Number = %d", acc_read.Acc_number);
             printf("\nAddress = %s", acc_read.address);
@@ -183,12 +187,187 @@ void view_account_details() {
     printf("\n Account No. %d was not found.\n", acc_no);
 }
 
-void edit_account_details(){
-    printf("Function not defined");
+void verification(int* acc_no, int* acc_pin){
+    printf("Enter your Account Number : ");
+    scanf("%d", &(*acc_no));
+    printf("Enter your PIN (6-digit) : ");
+    scanf("%d", &(*acc_pin));
+    return;
 }
 
+void edit_account_details(){
+    int choice;
+    
+    
+    printf("\n-*Choose the Option*-");
+    printf("\n1.Name");
+    printf("\n2.Address");
+    printf("\n3.Contact Number");
+    printf("\n4.PIN");
+    printf("\n5.Back\n");
+
+    printf("\n-> Enter your choice : ");
+    scanf("%d", &choice);
+
+
+        switch(choice){
+            case 1 : edit_Name();
+            break;
+
+            case 2 : edit_Address();
+            break;
+
+            case 3 : edit_contact_No();
+            break;
+
+            case 4 : edit_pin();
+            break;
+
+            case 5 : printf("\nBack to Menu \n");
+            return;
+            break;
+
+            default : printf("Invalid Choice!! \n Enter Correct Option !! \n");
+            break;
+        
+        }
+    
+}
+
+void edit_Name(){
+    FILE *file = fopen (ACCOUNT_FILE, "rb+");
+    if(file == NULL){
+        printf("\nUnable to access the file.\n");
+        return;
+    }
+    int acc_no;
+    int acc_pin;
+    verification(&acc_no, &acc_pin);
+    account acc_read;
+    char NEW_name [50];
+    char ch ;
+    do{
+        ch = getchar();
+    }while(ch != '\n' && ch != EOF);
+    printf("Enter your New Name : ");
+    fgets(NEW_name, sizeof(NEW_name), stdin);
+    fix_fgets_input(NEW_name);
+
+    while(fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            strcpy(acc_read.name, NEW_name);
+            fseek(file,-(long int)sizeof(acc_read), SEEK_CUR);
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            fclose(file);
+            printf("\nYour Name Changed successfully!!\n");
+            return ;
+        } 
+    }
+    fclose(file);
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+
+
+}
+
+void edit_Address(){
+    FILE *file = fopen (ACCOUNT_FILE, "rb+");
+    if(file == NULL){
+        printf("\nUnable to access the file.\n");
+        return;
+    }
+    int acc_no;
+    int acc_pin;
+    verification(&acc_no, &acc_pin);
+    account acc_read;
+    char NEW_add [50];
+    char ch ;
+    do{
+        ch = getchar();
+    }while(ch != '\n' && ch != EOF);
+    printf("Enter your New Address : ");
+    fgets(NEW_add, sizeof(NEW_add), stdin);
+    fix_fgets_input(NEW_add);
+
+    while(fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            strcpy(acc_read.address, NEW_add);
+            fseek(file,-(long int)sizeof(acc_read), SEEK_CUR);
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            fclose(file);
+            printf("\nYour Address Updated successfully!!\n");
+            return ;
+        } 
+    }
+    fclose(file);
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+
+}
+
+void edit_contact_No(){
+    FILE *file = fopen (ACCOUNT_FILE, "rb+");
+    if(file == NULL){
+        printf("\nUnable to access the file.\n");
+        return;
+    }
+    int acc_no;
+    int acc_pin;
+    verification(&acc_no, &acc_pin);
+    account acc_read;
+    int New_contact;
+
+    printf("Enter your New Contact no. : ");
+    scanf("%d", &New_contact);
+
+    while (fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            acc_read.contact_no = New_contact;
+            fseek(file, -(long int)sizeof(acc_read), SEEK_CUR);
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            fclose(file);
+            printf("\nYour Contact No. *+91 %d* Updated successfully !!\n", New_contact);
+            return;
+        }
+    }
+    fclose(file);
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+
+}
+
+void edit_pin(){
+    FILE* file = fopen(ACCOUNT_FILE, "rb+");
+    if(file == NULL){
+        printf("\nUnable to access the File\n");
+        return;
+    }
+
+    int acc_no;
+    int acc_pin;
+
+    account acc_read;
+    int NEW_Pin;
+
+    verification(&acc_no, &acc_pin);
+    printf("Enter Your New PIN (6-digit) : ");
+    scanf("%d", &NEW_Pin);
+
+    while(fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            acc_read.pin = NEW_Pin;
+            fseek(file, -(long int)sizeof(acc_read), SEEK_CUR);
+            fwrite(&acc_read, sizeof(acc_read), 1, file);
+            fclose(file);
+            printf("\nYour New Pin Updated Successfully!!\n");
+            return;
+        }
+    }
+    fclose(file);
+    printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+
+}
+
+
 void Delete_account(){
-    printf("1");
+    printf("function Not Build Yet !");
 }
 
 void fix_fgets_input(char* string){
@@ -208,10 +387,7 @@ void deposit_money(){
     account acc_read;
     float money;
 
-    printf("Enter your Account no. : ");
-    scanf("%d", &acc_no);
-    printf("Enter your Pin (6-digit) : ");
-    scanf("%d", &acc_pin);
+    verification (&acc_no, &acc_pin);
     printf("Enter amount to deposit : ");
     scanf("%f", &money);
 
@@ -243,10 +419,8 @@ void withdraw_money(){
     float money;
     account acc_read;
     
-    printf("Enter account no : ");
-    scanf("%d", &acc_no);
-    printf("Enter your pin (6-digit) : ");
-    scanf("%d", &acc_pin);
+    verification (&acc_no, &acc_pin);
+
     printf("Enter withdrawal amount : ");
     scanf("%f", &money);
 
@@ -274,8 +448,8 @@ void withdraw_money(){
 }
 
 void check_balance(){
-     FILE *file = fopen(ACCOUNT_FILE, "rb");  
-  if(file == NULL ){
+    FILE *file = fopen(ACCOUNT_FILE, "rb");  
+    if(file == NULL ){
         printf("\n Unable to access the file !!\n");
         return ;
     }
@@ -284,11 +458,7 @@ void check_balance(){
     int acc_pin;
     account acc_read;
 
-    printf("Enter your Account Number : ");
-    scanf("%d", &acc_no);
-    printf("Enter your Pin (6-digit) : ");
-    scanf("%d", &acc_pin);
-
+    verification (&acc_no, &acc_pin);
 
      while(fread(&acc_read, sizeof(acc_read), 1, file)){
         if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
@@ -315,11 +485,7 @@ void fund_transfer(){
     float money ;
     int found_from = 0, found_to = 0;
 
-    printf("Enter your Account No. : ");
-    scanf("%d", &from_acc_x);
-
-    printf("Enter your PIN : ");
-    scanf("%d", &acc_pin);
+    verification (&from_acc_x, &acc_pin);
 
     printf("Enter Amount : ");
     scanf("%f", &money);
