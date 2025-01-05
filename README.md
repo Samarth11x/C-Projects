@@ -15,7 +15,6 @@
 1. Date and time display <br>
 2. User Management <br>
 3. Bank Management System<br>
-3. Bank Management System <br>
 
 
 
