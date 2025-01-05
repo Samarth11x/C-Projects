@@ -1,6 +1,3 @@
-## *C-Projects*
-
-## Beginner Level Projects<br>
 # C-Projects
 
 ## Table of Contents
