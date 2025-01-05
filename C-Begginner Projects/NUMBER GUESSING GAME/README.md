@@ -1,4 +1,10 @@
 <h1 align="center">Hello There <img src="https://raw.githubusercontent.com/MartinHeinz/MartinHeinz/master/wave.gif" width="30px">!!, I'm Samarth Patil!</h1>
+
+**Let me introduce you to my C project**
+<br>
+*NUMBER GUESSING GAME*
+
+
 **How to Play**
 
 1. The program will generate a random number.
