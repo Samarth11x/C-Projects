@@ -22,7 +22,7 @@
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/Samarth11x/C-Projects/tree/main/C-Begginner%20Projects/NUMBER%20GUESSING%20GAME
+    git clone https://github.com/Samarth11x/C-Projects/tree/2a398cc5eccb4e20adc21c32f42030ba8eb64777/C-Begginner%20Projects/NUMBER%20GUESSING%20GAME
     ```
 2. Navigate to the project directory:
     ```sh
