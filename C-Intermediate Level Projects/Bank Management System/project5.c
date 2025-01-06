@@ -367,7 +367,45 @@ void edit_pin(){
 
 
 void Delete_account(){
-    printf("function Not Build Yet !");
+    FILE *file = fopen(ACCOUNT_FILE, "rb+");
+    if(file == NULL){
+        printf("\nUnable to access the file !!\n");
+        fclose(file);
+        return;
+    }
+
+    FILE* temp_file = fopen("temp.dat", "wb");
+    if(temp_file == NULL){
+        printf("\nUnable to create temporary file !!\n");
+        fclose(file);
+        return;
+    }
+    
+    account acc_read;
+    int acc_no;
+    int acc_pin;
+    verification(&acc_no, &acc_pin);
+
+    int found = 0;
+    while(fread(&acc_read, sizeof(acc_read), 1, file)){
+        if(acc_read.Acc_number == acc_no && acc_read.pin == acc_pin){
+            found = 1;
+        } else {
+            fwrite(&acc_read, sizeof(acc_read), 1, temp_file);
+        }
+    }
+
+    fclose(file);
+    fclose(temp_file);
+
+    if(found){
+        remove(ACCOUNT_FILE);
+        rename("temp.dat", ACCOUNT_FILE);
+        printf("\nYour account has been Deactivated successfully!!\n");
+    } else {
+        remove("temp.dat");
+        printf("\nAccount No. %d was not found in records or incorrect PIN.\n", acc_no);
+    }
 }
 
 void fix_fgets_input(char* string){
