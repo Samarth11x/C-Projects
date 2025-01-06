@@ -1,6 +1,3 @@
-## *C-Projects*
-
-## Beginner Level Projects<br>
 # C-Projects
 
 ## Table of Contents
@@ -18,7 +15,6 @@
 1. Date and time display <br>
 2. User Management <br>
 3. Bank Management System<br>
-3. Bank Management System <br>
 
 
 
